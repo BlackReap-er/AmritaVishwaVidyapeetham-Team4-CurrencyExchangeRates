@@ -3,48 +3,28 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter.messagebox import showerror
 import pandas as pd
+import plotly.express as px
+#importing all required libraries
 class main:
-    # import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace() ##Testing
+    # Destroy the toplevel tkinter pane
     def ded():
         top.destroy()
+    #Function to convert the amount 
     def convert(self):
         print(self.amount)
-        value_index = self.final[self.final['Date']==self.end_date].index
-        value = self.final.loc[self.n2.get(),value_index]
-        converted_amount = self.amount * value
-        text = 'Converted Amount=' + str(converted_amount)
-        top= Toplevel(self.window)
-        top.geometry("250x250")
-        top.title("Converted Amount")
-        Label(top, text= text, font=('Mistral 18 bold')).place(x=150,y=80)
-        exit = del_button = Button(top, text="Close", font=('Poppins 10 bold'),command=self.ded)
-        exit.place(x=150, y=150)
-        # return 1
-    def data_fetch(self):
         self.data = {}
         final = pd.DataFrame()
+        #Range of files to add to dataframe
         to_year_int = int(self.n3.get())
         from_year_int = int(self.n1.get())
+        self.end_date = str(self.to_date) + '-' + str(self.to_month) + '-' + str(self.n3.get())
+        #Appending all dataframes in the given data range to one dataframe for plotting and conversion
         for i in range(from_year_int, to_year_int+1):
             path = r"D:\\Amrita\\NT\\NTRS-Hackathon\\Cur_Conv_Dat\\Exchange_Rate_Report_" + str(i) + '.csv'
             self.data["year{}".format(i)] = pd.read_csv(path)
             var = 'year' + str(i)
             final = final.append(self.data[var], ignore_index=True)
-        # Clearning up unnecessary dataframes
-        del self.data
-        #Making the variable accessible to all functions
-        self.final = final
-        ##
-        currency_index = final.columns.str.find(self.n2.get())
-        for i in range(0, len(currency_index)):
-            if(currency_index[i] != (-1)):
-                currency_index_true = i
-                break
-        print(currency_index_true)
-        self.start_date = str(self.date) + '-' + str(self.month) + '-' + str(self.n1.get())
-        self.end_date = str(self.to_date) + '-' + str(self.to_month) + '-' + str(self.n3.get())
-        # from_date_index = final[final['Date']==from_date].index.values
-        # to_date_index = final[final['Date']==to_date].index.values
         final.rename(columns={'Date':'Date', 'Algerian dinar   (DZD)                     ':'DZD',
         'Australian dollar   (AUD)                     ':'AUD',
         'Bahrain dinar   (BHD)                     ':'BHD',
@@ -97,7 +77,96 @@ class main:
         'U.S. dollar   (USD)                     ':'USD', 
         'Uruguayan peso   (UYU)                     ':'UYU', 
         'Bolivar Soberano   (VES)                     ':'VES'}, inplace=True)
-        import plotly.express as px
+
+        value = final.at[self.end_date,self.n2.get()]
+        converted_amount = int(self.amount) * int(value)
+        text = 'Converted Amount=' + str(converted_amount) + '  On:' + str(self.end_date)
+        top= Toplevel(self.window)
+        top.geometry("250x250")
+        top.title("Converted Amount")
+        Label(top, text= text, font=('Mistral 18 bold')).place(x=150,y=80)
+        exit = del_button = Button(top, text="Close", font=('Poppins 10 bold'),command=self.ded)
+        exit.place(x=150, y=150)
+        
+    def data_fetch(self):
+        self.data = {}
+        final = pd.DataFrame()
+        #Range of files to add to dataframe
+        to_year_int = int(self.n3.get())
+        from_year_int = int(self.n1.get())
+        #Appending all dataframes in the given data range to one dataframe for plotting and conversion
+        for i in range(from_year_int, to_year_int+1):
+            path = r"D:\\Amrita\\NT\\NTRS-Hackathon\\Cur_Conv_Dat\\Exchange_Rate_Report_" + str(i) + '.csv'
+            self.data["year{}".format(i)] = pd.read_csv(path)
+            var = 'year' + str(i)
+            final = final.append(self.data[var], ignore_index=True)
+        # Clearing up unnecessary dataframes to free memory
+        del self.data
+        #Finding index of the currency selected
+        currency_index = final.columns.str.find(self.n2.get())
+        for i in range(0, len(currency_index)):
+            if(currency_index[i] != (-1)):
+                currency_index_true = i
+                break
+        print(currency_index_true)
+        #Start and End Date conversion
+        self.start_date = str(self.date) + '-' + str(self.month) + '-' + str(self.n1.get())
+        self.end_date = str(self.to_date) + '-' + str(self.to_month) + '-' + str(self.n3.get())
+
+        #Currency Dictionary
+        final.rename(columns={'Date':'Date', 'Algerian dinar   (DZD)                     ':'DZD',
+        'Australian dollar   (AUD)                     ':'AUD',
+        'Bahrain dinar   (BHD)                     ':'BHD',
+        'Bolivar Fuerte   (VEF)                     ':'VEF',
+        'Botswana pula   (BWP)                     ':'BWP',
+        'Brazilian real   (BRL)                     ':'BRL',
+        'Brunei dollar   (BND)                     ':'BND', 
+        'Canadian dollar   (CAD)                     ':'CAD', 
+        'Chilean peso   (CLP)                     ':'CLP', 
+        'Chinese yuan   (CNY)                     ':'CNY', 
+        'Colombian peso   (COP)                     ':'COP', 
+        'Czech koruna   (CZK)                     ':'CZK', 
+        'Danish krone   (DKK)                     ':'DKK', 
+        'Euro   (EUR)                     ':'EUR', 
+        'Hungarian forint   (HUF)                     ':'HUF', 
+        'Icelandic krona   (ISK)                     ':'ISK', 
+        'Indian rupee   (INR)                     ':'INR', 
+        'Indonesian rupiah   (IDR)                     ':'IDR', 
+        'Iranian rial   (IRR)                     ':'IRR', 
+        'Israeli New Shekel   (ILS)                     ':'ILS', 
+        'Japanese yen   (JPY)                     ':'JPY', 
+        'Kazakhstani tenge   (KZT)                     ':'KZT', 
+        'Korean won   (KRW)                     ':'KRW', 
+        'Kuwaiti dinar   (KWD)                     ':'KWD', 
+        'Libyan dinar   (LYD)                     ':'LYD', 
+        'Malaysian ringgit   (MYR)                     ':'MYR', 
+        'Mauritian rupee   (MUR)                     ':'MUR', 
+        'Mexican peso   (MXN)                     ':'MXN', 
+        'Nepalese rupee   (NPR)                     ':'NPR', 
+        'New Zealand dollar   (NZD)                     ':'NZD', 
+        'Norwegian krone   (NOK)                     ':'NOK', 
+        'Omani rial   (OMR)                     ':'OMR', 
+        'Pakistani rupee   (PKR)                     ':'PKR', 
+        'Peruvian sol   (PEN)                     ':'PEN', 
+        'Philippine peso   (PHP)                     ':'PHP', 
+        'Polish zloty   (PLN)                     ':'PLN', 
+        'Qatari riyal   (QAR)                     ':'QAR', 
+        'Russian ruble   (RUB)                     ':'RUB', 
+        'Saudi Arabian riyal   (SAR)                     ':'SAR', 
+        'Singapore dollar   (SGD)                     ':'SGD',
+        'South African rand   (ZAR)                     ':'ZAR', 
+        'Sri Lankan rupee   (LKR)                     ':'LKR', 
+        'Swedish krona   (SEK)                     ':'SEK', 
+        'Swiss franc   (CHF)                     ':'CHF', 
+        'Thai baht   (THB)                     ':'THB', 
+        'Trinidadian dollar   (TTD)                     ':'TTD', 
+        'Tunisian dinar   (TND)                     ':'TND', 
+        'U.A.E. dirham   (AED)                     ':'AED', 
+        'U.K. pound   (GBP)                     ':'GBP', 
+        'U.S. dollar   (USD)                     ':'USD', 
+        'Uruguayan peso   (UYU)                     ':'UYU', 
+        'Bolivar Soberano   (VES)                     ':'VES'}, inplace=True)
+        #Plotting the chart
         final['Date'] = pd.to_datetime(final['Date'])  
         # start_date = '2015-01-01'
         # end_date = '2016-01-02'
@@ -105,6 +174,7 @@ class main:
         df = final.loc[mask]
         hallo = 'USD VS ' + self.n2.get()
         fig = px.line(df, x="Date", y=self.n2.get(), title=hallo)
+        # Providing option for selecting weekly, monthly and yearly timeframes
         fig.update_xaxes(
             rangeslider_visible=True,
             rangeselector=dict(
@@ -117,11 +187,11 @@ class main:
                 ])
             )
         )
+        # Displaying maximum and minimum value of currency in given timeframe
         max_val = final.iloc[:,currency_index_true].max()
         min_val = final.iloc[:,currency_index_true].min()
         text = '<b>MAX:' + str(max_val) + '  MIN:' + str(min_val) + '</b>'
         fig.add_annotation(dict(font=dict(color="black",size=12),
-                            #x=x_loc,
                             x=1.06,
                             y=1.06,
                             showarrow=False,
@@ -132,7 +202,7 @@ class main:
                            ))
         fig.show()
                 
-    
+    # Main tkinter page
     def window(self):
         # creating the main self.window
         self.window = Tk()
@@ -175,13 +245,15 @@ class main:
         'KRW', 'KWD', 'LYD', 'MYR', 'MUR', 'MXN', 'NPR', 'NZD', 'NOK', 'OMR', 'PKR', 'PEN', 
         'PHP', 'PLN', 'QAR', 'RUB', 'SAR', 'SGD', 'ZAR', 'LKR', 'SEK', 'CHF', 'THB', 'TTD', 
         'TND', 'AED', 'GBP', 'USD', 'UYU', 'VES']
-        ##Testing
-        def check(*args):
-            print(f"the variable has changed to '{self.n.get()}' \n '{self.n1.get()}' \n '{self.n2.get()}' \n '{self.n3.get()}'")
-        self.n.trace('w', check)
-        self.n1.trace('w', check)
-        self.n2.trace('w', check)
-        self.n3.trace('w', check)
+
+        ##Testing 
+        # def check(*args):
+        #     print(f"the variable has changed to '{self.n.get()}' \n '{self.n1.get()}' \n '{self.n2.get()}' \n '{self.n3.get()}'")
+        # self.n.trace('w', check)
+        # self.n1.trace('w', check)
+        # self.n2.trace('w', check)
+        # self.n3.trace('w', check)
+
         # this is the combobox for holding from_currencies
         from_currency_combo = ttk.OptionMenu(bottom_frame,self.n,self.currencies[49], *self.currencies)
         from_currency_combo.width = 10
@@ -250,21 +322,6 @@ class main:
         to_date_entry = Entry(bottom_frame, width=4, font=('Poppins 10 bold'))
         to_date_entry.place(x=5, y=131)
         self.to_date = date_entry.get()
-        # # the label for AMOUNT
-        # amount_label = Label(bottom_frame, text='AMOUNT:', font=('Poppins 10 bold'))
-        # amount_label.place(x=5, y=75)
-
-        # # entry for amount
-        # amount_entry = Entry(bottom_frame, width=25, font=('Poppins 15 bold'))
-        # amount_entry.place(x=5, y=100)
-
-        # an empty label for displaying the result
-        result_label = Label(bottom_frame, text='', font=('Poppins 10 bold'))
-        result_label.place(x=5, y=135)
-
-        # an empty label for displaying the time
-        time_label = Label(bottom_frame, text='', font=('Poppins 10 bold'))
-        time_label.place(x=5, y=155)
 
         # the clickable button for converting the currency
         main_button = Button(bottom_frame, text="GRAPH IT!", bg=secondary, fg=white, font=('Poppins 10 bold'),command=self.data_fetch)

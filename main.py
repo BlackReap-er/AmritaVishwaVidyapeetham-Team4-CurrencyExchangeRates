@@ -10,8 +10,6 @@ class main:
         final = pd.DataFrame()
         to_year_int = int(self.n3.get())
         from_year_int = int(self.n1.get())
-        print(to_year_int)
-        print(from_year_int)
         for i in range(from_year_int, to_year_int+1):
             path = r"D:\\Amrita\\NT\\NTRS-Hackathon\\Cur_Conv_Dat\\Exchange_Rate_Report_" + str(i) + '.csv'
             self.data["year{}".format(i)] = pd.read_csv(path)
@@ -25,22 +23,72 @@ class main:
                 currency_index_true = i
                 break
         print(currency_index_true)
-        if self.to_currency != 'USD':
-            min_val = final.iloc[:,currency_index_true].min()
-            min_val_index =  final.iloc[:,currency_index_true].idxmin()
-            max_val_index = final.iloc[:,currency_index_true].idxmax()
-            max_val = final.iloc[:,currency_index_true].max()
-            print(min_val)
-            print(min_val_index)
-            print(max_val_index)
-            pd.get_option('plotting.backend') # default: matplotlib
-            # df = pd.DataFrame(dict(a=[1,3,2], b=[3,2,1]))
-            final.iloc[:,currency_index_true].plot(backend='plotly') # backend exception only for this one plot.
-            pd.set_option('plotting.backend', 'plotly') # or
-            pd.options.plotting.backend = "plotly"
-            fig = final.iloc[:,currency_index_true].plot() # uses backend set in options else default.
-            fig.show()
-        
+        start_date = str(self.date) + '-' + str(self.month) + '-' + str(self.n1.get())
+        end_date = str(self.to_date) + '-' + str(self.to_month) + '-' + str(self.n3.get())
+        # from_date_index = final[final['Date']==from_date].index.values
+        # to_date_index = final[final['Date']==to_date].index.values
+        final.rename(columns={'Date':'Date', 'Algerian dinar   (DZD)                     ':'DZD',
+        'Australian dollar   (AUD)                     ':'AUD',
+        'Bahrain dinar   (BHD)                     ':'BHD',
+        'Bolivar Fuerte   (VEF)                     ':'VEF',
+        'Botswana pula   (BWP)                     ':'BWP',
+        'Brazilian real   (BRL)                     ':'BRL',
+        'Brunei dollar   (BND)                     ':'BND', 
+        'Canadian dollar   (CAD)                     ':'CAD', 
+        'Chilean peso   (CLP)                     ':'CLP', 
+        'Chinese yuan   (CNY)                     ':'CNY', 
+        'Colombian peso   (COP)                     ':'COP', 
+        'Czech koruna   (CZK)                     ':'CZK', 
+        'Danish krone   (DKK)                     ':'DKK', 
+        'Euro   (EUR)                     ':'EUR', 
+        'Hungarian forint   (HUF)                     ':'HUF', 
+        'Icelandic krona   (ISK)                     ':'ISK', 
+        'Indian rupee   (INR)                     ':'INR', 
+        'Indonesian rupiah   (IDR)                     ':'IDR', 
+        'Iranian rial   (IRR)                     ':'IRR', 
+        'Israeli New Shekel   (ILS)                     ':'ILS', 
+        'Japanese yen   (JPY)                     ':'JPY', 
+        'Kazakhstani tenge   (KZT)                     ':'KZT', 
+        'Korean won   (KRW)                     ':'KRW', 
+        'Kuwaiti dinar   (KWD)                     ':'KWD', 
+        'Libyan dinar   (LYD)                     ':'LYD', 
+        'Malaysian ringgit   (MYR)                     ':'MYR', 
+        'Mauritian rupee   (MUR)                     ':'MUR', 
+        'Mexican peso   (MXN)                     ':'MXN', 
+        'Nepalese rupee   (NPR)                     ':'NPR', 
+        'New Zealand dollar   (NZD)                     ':'NZD', 
+        'Norwegian krone   (NOK)                     ':'NOK', 
+        'Omani rial   (OMR)                     ':'OMR', 
+        'Pakistani rupee   (PKR)                     ':'PKR', 
+        'Peruvian sol   (PEN)                     ':'PEN', 
+        'Philippine peso   (PHP)                     ':'PHP', 
+        'Polish zloty   (PLN)                     ':'PLN', 
+        'Qatari riyal   (QAR)                     ':'QAR', 
+        'Russian ruble   (RUB)                     ':'RUB', 
+        'Saudi Arabian riyal   (SAR)                     ':'SAR', 
+        'Singapore dollar   (SGD)                     ':'SGD',
+        'South African rand   (ZAR)                     ':'ZAR', 
+        'Sri Lankan rupee   (LKR)                     ':'LKR', 
+        'Swedish krona   (SEK)                     ':'SEK', 
+        'Swiss franc   (CHF)                     ':'CHF', 
+        'Thai baht   (THB)                     ':'THB', 
+        'Trinidadian dollar   (TTD)                     ':'TTD', 
+        'Tunisian dinar   (TND)                     ':'TND', 
+        'U.A.E. dirham   (AED)                     ':'AED', 
+        'U.K. pound   (GBP)                     ':'GBP', 
+        'U.S. dollar   (USD)                     ':'USD', 
+        'Uruguayan peso   (UYU)                     ':'UYU', 
+        'Bolivar Soberano   (VES)                     ':'VES'}, inplace=True)
+        import plotly.express as px
+        final['Date'] = pd.to_datetime(final['Date'])  
+        # start_date = '2015-01-01'
+        # end_date = '2016-01-02'
+        mask = (final['Date'] > start_date) & (final['Date'] <= end_date)
+        df = final.loc[mask]
+        hallo = 'USD VS ' + self.n2.get()
+        fig = px.line(df, x="Date", y=self.n2.get(), title=hallo)
+        fig.show()
+                
     
     def window(self):
         # creating the main window

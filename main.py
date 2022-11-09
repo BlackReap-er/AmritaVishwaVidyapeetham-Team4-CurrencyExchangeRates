@@ -131,7 +131,7 @@ class main:
         'COP', 'CZK', 'DKK', 'EUR', 'HUF', 'ISK', 'INR', 'IDR', 'IRR', 'ILS', 'JPY', 'KZT',
         'KRW', 'KWD', 'LYD', 'MYR', 'MUR', 'MXN', 'NPR', 'NZD', 'NOK', 'OMR', 'PKR', 'PEN', 
         'PHP', 'PLN', 'QAR', 'RUB', 'SAR', 'SGD', 'ZAR', 'LKR', 'SEK', 'CHF', 'THB', 'TTD', 
-        'TND', 'AED', 'GBP', 'USD', 'UYU']
+        'TND', 'AED', 'GBP', 'USD', 'UYU', 'VES']
         ##Testing
         def check(*args):
             print(f"the variable has changed to '{self.n.get()}' \n '{self.n1.get()}' \n '{self.n2.get()}' \n '{self.n3.get()}'")
@@ -182,7 +182,7 @@ class main:
         to_currency_combo_2.place(x=200, y=130)
         self.to_currency = self.n2.get()
 
-        to_currency_label_2 = Label(bottom_frame, text='CURRENCY', font=('Poppins 9 bold'), justify=RIGHT)
+        to_currency_label_2 = Label(bottom_frame, text='GRAPH IT!', font=('Poppins 9 bold'), justify=RIGHT)
         to_currency_label_2.place(x=200, y=109)
 
         # to_year

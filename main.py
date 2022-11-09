@@ -8,8 +8,8 @@ class main:
     def data_fetch(self):
         self.data = {}
         final = pd.DataFrame()
-        to_year_int = int(self.to_year)
-        from_year_int = int(self.from_year)
+        to_year_int = int(self.n3.get())
+        from_year_int = int(self.n1.get())
         print(to_year_int)
         print(from_year_int)
         for i in range(from_year_int, to_year_int+1):
@@ -19,7 +19,7 @@ class main:
             final = final.append(self.data[var], ignore_index=True)
         # Clearning up unnecessary dataframes
         del self.data
-        currency_index = final.columns.str.find(self.to_currency)
+        currency_index = final.columns.str.find(self.n2.get())
         for i in range(0, len(currency_index)):
             if(currency_index[i] != (-1)):
                 currency_index_true = i
@@ -63,13 +63,13 @@ class main:
         # the bottom frame
         bottom_frame = Frame(window, width=400, height=450)
         bottom_frame.grid(row=1, column=0)
-        n = tk.StringVar(bottom_frame) 
+        self.n = tk.StringVar(bottom_frame) 
         # n.set(self.currencies[0])
-        n1 = tk.StringVar(bottom_frame) 
+        self.n1 = tk.StringVar(bottom_frame) 
         # n1.set(self.years[0])
-        n2 = tk.StringVar(bottom_frame) 
+        self.n2 = tk.StringVar(bottom_frame) 
         # n2.set(self.currencies[0])
-        n3 = tk.StringVar(bottom_frame) 
+        self.n3 = tk.StringVar(bottom_frame) 
         # n3.set(self.years[0])
         # widgets inside the bottom frame
         from_label = Label(bottom_frame,text='FROM', font=('Poppins 9 bold'), justify=RIGHT, fg=primary)
@@ -84,23 +84,30 @@ class main:
         'KRW', 'KWD', 'LYD', 'MYR', 'MUR', 'MXN', 'NPR', 'NZD', 'NOK', 'OMR', 'PKR', 'PEN', 
         'PHP', 'PLN', 'QAR', 'RUB', 'SAR', 'SGD', 'ZAR', 'LKR', 'SEK', 'CHF', 'THB', 'TTD', 
         'TND', 'AED', 'GBP', 'USD', 'UYU']
-
+        ##Testing
+        def check(*args):
+            print(f"the variable has changed to '{self.n.get()}' \n '{self.n1.get()}' \n '{self.n2.get()}' \n '{self.n3.get()}'")
+        self.n.trace('w', check)
+        self.n1.trace('w', check)
+        self.n2.trace('w', check)
+        self.n3.trace('w', check)
         # this is the combobox for holding from_currencies
-        from_currency_combo = ttk.OptionMenu(bottom_frame,n,self.currencies[49], *self.currencies)
+        from_currency_combo = ttk.OptionMenu(bottom_frame,self.n,self.currencies[49], *self.currencies)
         from_currency_combo.width = 10
         from_currency_combo.font = ('Poppins 10 bold')
-        self.from_currency = n.get()
+        self.from_currency = self.n.get()
         from_currency_combo.place(x=200, y=58)
+
         # YEARS LIST
         self.years = ['2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022']
         # this is the combobox for holding years
         years_label = Label(bottom_frame, text='YEAR', font=('Poppins 9 bold'), justify=RIGHT)
         years_label.place(x=120, y=40)
-        years_combo = ttk.OptionMenu(bottom_frame,n1, *self.years)
+        years_combo = ttk.OptionMenu(bottom_frame,self.n1, *self.years)
         years_combo.width=6
         years_combo.font=('Poppins 10 bold')
         years_combo.place(x=120, y=58)
-        self.from_year = n1.get()
+        self.from_year = self.n1.get()
 
         # Month entry
         month_label = Label(bottom_frame, text='MONTH', font=('Poppins 9 bold'), justify=RIGHT)
@@ -121,11 +128,11 @@ class main:
         to_label.place(x=5, y=88)
 
         # to_Currency
-        to_currency_combo_2 = ttk.OptionMenu(bottom_frame,n2,self.currencies[49], *self.currencies)
+        to_currency_combo_2 = ttk.OptionMenu(bottom_frame,self.n2,self.currencies[49], *self.currencies)
         to_currency_combo_2.width=10
         to_currency_combo_2.font=('Poppins 10 bold')
         to_currency_combo_2.place(x=200, y=130)
-        self.to_currency = n2.get()
+        self.to_currency = self.n2.get()
 
         to_currency_label_2 = Label(bottom_frame, text='CURRENCY', font=('Poppins 9 bold'), justify=RIGHT)
         to_currency_label_2.place(x=200, y=109)
@@ -133,11 +140,11 @@ class main:
         # to_year
         to_years_label = Label(bottom_frame, text='YEAR', font=('Poppins 9 bold'), justify=RIGHT)
         to_years_label.place(x=120, y=109)
-        to_years_combo = ttk.OptionMenu(bottom_frame,n3, *self.years)
+        to_years_combo = ttk.OptionMenu(bottom_frame,self.n3, *self.years)
         to_years_combo.width=6 
         to_years_combo.font=('Poppins 10 bold')
         to_years_combo.place(x=120, y=130)
-        self.to_year = n3.get()
+        self.to_year = self.n3.get()
 
         # Month entry
         to_month_label = Label(bottom_frame, text='MONTH', font=('Poppins 9 bold'), justify=RIGHT)

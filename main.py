@@ -5,6 +5,21 @@ from tkinter.messagebox import showerror
 import pandas as pd
 class main:
     # import pdb; pdb.set_trace()
+    def ded():
+        top.destroy()
+    def convert(self):
+        print(self.amount)
+        value_index = self.final[self.final['Date']==self.end_date].index
+        value = self.final.loc[self.n2.get(),value_index]
+        converted_amount = self.amount * value
+        text = 'Converted Amount=' + str(converted_amount)
+        top= Toplevel(self.window)
+        top.geometry("250x250")
+        top.title("Converted Amount")
+        Label(top, text= text, font=('Mistral 18 bold')).place(x=150,y=80)
+        exit = del_button = Button(top, text="Close", font=('Poppins 10 bold'),command=self.ded)
+        exit.place(x=150, y=150)
+        # return 1
     def data_fetch(self):
         self.data = {}
         final = pd.DataFrame()
@@ -17,14 +32,17 @@ class main:
             final = final.append(self.data[var], ignore_index=True)
         # Clearning up unnecessary dataframes
         del self.data
+        #Making the variable accessible to all functions
+        self.final = final
+        ##
         currency_index = final.columns.str.find(self.n2.get())
         for i in range(0, len(currency_index)):
             if(currency_index[i] != (-1)):
                 currency_index_true = i
                 break
         print(currency_index_true)
-        start_date = str(self.date) + '-' + str(self.month) + '-' + str(self.n1.get())
-        end_date = str(self.to_date) + '-' + str(self.to_month) + '-' + str(self.n3.get())
+        self.start_date = str(self.date) + '-' + str(self.month) + '-' + str(self.n1.get())
+        self.end_date = str(self.to_date) + '-' + str(self.to_month) + '-' + str(self.n3.get())
         # from_date_index = final[final['Date']==from_date].index.values
         # to_date_index = final[final['Date']==to_date].index.values
         final.rename(columns={'Date':'Date', 'Algerian dinar   (DZD)                     ':'DZD',
@@ -83,25 +101,50 @@ class main:
         final['Date'] = pd.to_datetime(final['Date'])  
         # start_date = '2015-01-01'
         # end_date = '2016-01-02'
-        mask = (final['Date'] > start_date) & (final['Date'] <= end_date)
+        mask = (final['Date'] > self.start_date) & (final['Date'] <= self.end_date)
         df = final.loc[mask]
         hallo = 'USD VS ' + self.n2.get()
         fig = px.line(df, x="Date", y=self.n2.get(), title=hallo)
+        fig.update_xaxes(
+            rangeslider_visible=True,
+            rangeselector=dict(
+                buttons=list([
+                    dict(count=1, label="1m", step="month", stepmode="backward"),
+                    dict(count=6, label="6m", step="month", stepmode="backward"),
+                    dict(count=1, label="YTD", step="year", stepmode="todate"),
+                    dict(count=1, label="1y", step="year", stepmode="backward"),
+                    dict(step="all")
+                ])
+            )
+        )
+        max_val = final.iloc[:,currency_index_true].max()
+        min_val = final.iloc[:,currency_index_true].min()
+        text = '<b>MAX:' + str(max_val) + '  MIN:' + str(min_val) + '</b>'
+        fig.add_annotation(dict(font=dict(color="black",size=12),
+                            #x=x_loc,
+                            x=1.06,
+                            y=1.06,
+                            showarrow=False,
+                            text=text,
+                            textangle=0,
+                            xref="paper",
+                            yref="paper"
+                           ))
         fig.show()
                 
     
     def window(self):
-        # creating the main window
-        window = Tk()
-        window.geometry('410x440+500+200')
-        window.title('Currency Grapher')
-        window.resizable(height=FALSE, width=FALSE)
+        # creating the main self.window
+        self.window = Tk()
+        self.window.geometry('410x440+500+200')
+        self.window.title('Currency Grapher')
+        self.window.resizable(height=FALSE, width=FALSE)
         primary = '#081F4D'
         secondary = '#0083FF'
         white = '#FFFFFF'
 
         # the top frame
-        top_frame = Frame(window, bg=primary, width=450, height=80)
+        top_frame = Frame(self.window, bg=primary, width=450, height=80)
         top_frame.grid(row=0, column=0)
 
         # label for the text Currency Converter
@@ -109,7 +152,7 @@ class main:
         name_label.grid(row=0, column=0)
         ##########################################
         # the bottom frame
-        bottom_frame = Frame(window, width=400, height=450)
+        bottom_frame = Frame(self.window, width=400, height=450)
         bottom_frame.grid(row=1, column=0)
         self.n = tk.StringVar(bottom_frame) 
         # n.set(self.currencies[0])
@@ -182,7 +225,7 @@ class main:
         to_currency_combo_2.place(x=200, y=130)
         self.to_currency = self.n2.get()
 
-        to_currency_label_2 = Label(bottom_frame, text='GRAPH IT!', font=('Poppins 9 bold'), justify=RIGHT)
+        to_currency_label_2 = Label(bottom_frame, text='CURRENCY', font=('Poppins 9 bold'), justify=RIGHT)
         to_currency_label_2.place(x=200, y=109)
 
         # to_year
@@ -224,9 +267,18 @@ class main:
         time_label.place(x=5, y=155)
 
         # the clickable button for converting the currency
-        main_button = Button(bottom_frame, text="CONVERT", bg=secondary, fg=white, font=('Poppins 10 bold'),command=self.data_fetch)
+        main_button = Button(bottom_frame, text="GRAPH IT!", bg=secondary, fg=white, font=('Poppins 10 bold'),command=self.data_fetch)
         main_button.place(x=5, y=165)
-        window.mainloop()
+
+        # entry for amount
+        amount_label = Label(bottom_frame,text = 'Enter Amount to convert', font=('Poppins 10 bold'))
+        amount_label.place(x=5,y=200)
+        amount_entry = Entry(bottom_frame, width=25, font=('Poppins 15 bold'))
+        amount_entry.place(x=5, y=220)
+        self.amount = amount_entry.get()
+        convert_button = Button(bottom_frame, text="CONVERT IT!", bg=secondary, fg=white, font=('Poppins 10 bold'),command=self.convert)
+        convert_button.place(x=5,y=260)
+        self.window.mainloop()
 
         
 
